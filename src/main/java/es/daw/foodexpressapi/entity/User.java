@@ -29,7 +29,8 @@ public class User implements UserDetails {
 
     private String email;
 
-    @ManyToOne
+    @ManyToOne // by default EAGER...
+    //@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="role_id", nullable = false)
     private Role role;
 

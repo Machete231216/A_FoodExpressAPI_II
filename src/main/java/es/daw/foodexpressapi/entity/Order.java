@@ -40,4 +40,7 @@ public class Order {
     @ManyToOne(optional = false)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
+
+    // FALTA LA RELACIÓN ORDER_DETAILS...
+    //@OneToMany
 }
