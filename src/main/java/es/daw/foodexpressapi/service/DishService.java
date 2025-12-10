@@ -6,6 +6,8 @@ import es.daw.foodexpressapi.mapper.DishMapper;
 import es.daw.foodexpressapi.repository.DishRepository;
 import es.daw.foodexpressapi.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,12 +20,16 @@ public class DishService {
     private final RestaurantRepository restaurantRepository;
     private final DishMapper dishMapper;
 
-    public List<DishResponseDTO> findAll() {
-    //public List<DishDTO> findAll() {
-        return dishRepository.findAll()
-                .stream()
-                //.map(dishMapper::toDTO)
-                .map(dishMapper::toResponseDTO)
-                .toList();
+//    public List<DishResponseDTO> findAll() {
+//        return dishRepository.findAll()
+//                .stream()
+//                .map(dishMapper::toResponseDTO)
+//                .toList();
+//    }
+
+    public Page<DishResponseDTO> findAll(Pageable pageable) {
+        return dishRepository.findAll(pageable)
+                .map(dishMapper::toResponseDTO);
     }
+
 }
