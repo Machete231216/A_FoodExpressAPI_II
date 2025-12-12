@@ -1,6 +1,7 @@
 package es.daw.foodexpressapi.service;
 
 import es.daw.foodexpressapi.dto.OrderDetailDTO;
+import es.daw.foodexpressapi.dto.OrderDetailViewDTO;
 import es.daw.foodexpressapi.entity.OrderDetail;
 import es.daw.foodexpressapi.repository.OrderDetailRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class OrderDetailService {
                                 od.getSubtotal()
                         ))
                 .toList();
+    }
+
+    public List<OrderDetailViewDTO> findViewByOrderId(Long orderId) {
+        return orderDetailRepository.findViewByOrderId(orderId)
+                .orElseThrow( () -> new RuntimeException("No existe el pedido....."));
+
     }
 
 }
