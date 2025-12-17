@@ -1,6 +1,7 @@
 package es.daw.foodexpressapi.service;
 
 import es.daw.foodexpressapi.dto.OrderResponseDTO;
+import es.daw.foodexpressapi.dto.OrderSummaryDTO;
 import es.daw.foodexpressapi.entity.Order;
 import es.daw.foodexpressapi.enums.OrderStatus;
 import es.daw.foodexpressapi.exception.InvalidStatusException;
@@ -26,8 +27,14 @@ public class OrderService {
 
     public List<OrderResponseDTO> filterOrders(String status, Long userId, Long restaurantId) {
 
-        if (status != null && !OrderStatus.isValid(status)) {
-            throw new InvalidStatusException(status);
+//        if (status != null && !OrderStatus.isValid(status)) {
+//            throw new InvalidStatusException(status);
+//        }
+        OrderStatus parsedStatus = null;
+        if (status != null){
+            if (!OrderStatus.isValid(status))
+                throw new InvalidStatusException(status);
+            parsedStatus = OrderStatus.valueOf(status);
         }
 
         if (userId != null && !userRepository.existsById(userId)) {
@@ -38,37 +45,43 @@ public class OrderService {
             throw new RestaurantNotFoundException(restaurantId);
         }
 
-        List<Order> orders;
+        //List<Order> orders = orderRepository.findByFilters(status, userId, restaurantId);
+        List<Order> orders = orderRepository.findByFilters(parsedStatus, userId, restaurantId);
 
-        if (status != null && userId != null && restaurantId != null) {
-            orders = orderRepository.findByStatusAndUserIdAndRestaurantId(status, userId, restaurantId);
 
-        } else if (status != null && userId != null) {
-            orders = orderRepository.findByStatusAndUserId(status, userId);
-
-        } else if (status != null && restaurantId != null) {
-            orders = orderRepository.findByStatusAndRestaurantId(status, restaurantId);
-
-        } else if (userId != null && restaurantId != null) {
-            orders = orderRepository.findByUserIdAndRestaurantId(userId, restaurantId);
-
-        } else if (status != null) {
-            orders = orderRepository.findByStatus(status);
-
-        } else if (userId != null) {
-            orders = orderRepository.findByUserId(userId);
-
-        } else if (restaurantId != null) {
-            orders = orderRepository.findByRestaurantId(restaurantId);
-
-        } else {
-            orders = orderRepository.findAll();
-        }
+//        if (status != null && userId != null && restaurantId != null) {
+//            orders = orderRepository.findByStatusAndUserIdAndRestaurantId(status, userId, restaurantId);
+//
+//        } else if (status != null && userId != null) {
+//            orders = orderRepository.findByStatusAndUserId(status, userId);
+//
+//        } else if (status != null && restaurantId != null) {
+//            orders = orderRepository.findByStatusAndRestaurantId(status, restaurantId);
+//
+//        } else if (userId != null && restaurantId != null) {
+//            orders = orderRepository.findByUserIdAndRestaurantId(userId, restaurantId);
+//
+//        } else if (status != null) {
+//            orders = orderRepository.findByStatus(status);
+//
+//        } else if (userId != null) {
+//            orders = orderRepository.findByUserId(userId);
+//
+//        } else if (restaurantId != null) {
+//            orders = orderRepository.findByRestaurantId(restaurantId);
+//
+//        } else {
+//            orders = orderRepository.findAll();
+//        }
 
         return orders.stream()
                 .map(orderMapper::toResponse)
                 .toList();
     }
 
+    public List<OrderSummaryDTO> getAllOrderSummaries() {
+        return orderRepository.findAllOrderSummaries();
+
+    }
 
 }

@@ -7,6 +7,8 @@ public enum OrderStatus {
     ENTREGADO,
     CANCELADO;
 
+    // PENDIENTE!!!
+
     public static boolean isValid(String value) {
         if (value == null) return true;
         try {

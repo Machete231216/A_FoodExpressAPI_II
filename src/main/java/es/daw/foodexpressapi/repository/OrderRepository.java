@@ -2,26 +2,28 @@ package es.daw.foodexpressapi.repository;
 
 import es.daw.foodexpressapi.dto.OrderSummaryDTO;
 import es.daw.foodexpressapi.entity.Order;
+import es.daw.foodexpressapi.enums.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order,Long> {
 
-    List<Order> findByStatus(String status);
-
-    List<Order> findByUserId(Long userId);
-
-    List<Order> findByRestaurantId(Long restaurantId);
-
-    List<Order> findByStatusAndUserId(String status, Long userId);
-
-    List<Order> findByStatusAndRestaurantId(String status, Long restaurantId);
-
-    List<Order> findByUserIdAndRestaurantId(Long userId, Long restaurantId);
-
-    List<Order> findByStatusAndUserIdAndRestaurantId(String status, Long userId, Long restaurantId);
+//    List<Order> findByStatus(String status);
+//
+//    List<Order> findByUserId(Long userId);
+//
+//    List<Order> findByRestaurantId(Long restaurantId);
+//
+//    List<Order> findByStatusAndUserId(String status, Long userId);
+//
+//    List<Order> findByStatusAndRestaurantId(String status, Long restaurantId);
+//
+//    List<Order> findByUserIdAndRestaurantId(Long userId, Long restaurantId);
+//
+//    List<Order> findByStatusAndUserIdAndRestaurantId(String status, Long userId, Long restaurantId);
 
 
     @Query("""
@@ -39,6 +41,20 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
         GROUP BY o.id, u.username, r.name
         ORDER BY o.id
         """)
-    List<OrderSummaryDTO> findAllOrderSummaries();
+    public List<OrderSummaryDTO> findAllOrderSummaries(); //PENDIENTE// devolver OrderSummary de un solo pedido
+
+    @Query("""
+        SELECT o FROM Order o
+            WHERE (:status IS NULL OR o.status = :status)
+                AND (:userId IS NULL OR o.user.id = :userId)
+                    AND (:restaurantId IS NULL OR o.restaurant.id = :restaurantId)
+    """
+    )
+    public List<Order> findByFilters(
+            //@Param("status") String status,
+            @Param("status") OrderStatus status,
+            Long userId,
+            Long restaurantId
+    );
 
 }

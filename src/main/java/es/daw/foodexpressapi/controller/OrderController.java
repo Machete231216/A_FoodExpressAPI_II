@@ -1,6 +1,7 @@
 package es.daw.foodexpressapi.controller;
 
 import es.daw.foodexpressapi.dto.OrderResponseDTO;
+import es.daw.foodexpressapi.dto.OrderSummaryDTO;
 import es.daw.foodexpressapi.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,5 +28,10 @@ public class OrderController {
 
             return ResponseEntity.ok(orderService.filterOrders(status, userId, restaurantId));
 
+    }
+
+    @GetMapping("/summary")
+    public ResponseEntity<List<OrderSummaryDTO>> getAllOrderSummaries(){
+        return ResponseEntity.ok(orderService.getAllOrderSummaries());
     }
 }

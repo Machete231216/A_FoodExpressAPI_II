@@ -33,5 +33,5 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, OrderD
                 WHERE od.order.id = :orderId
     """
     )
-    public BigDecimal calculateTotal(Long orderId);
+    public BigDecimal calculateTotal(Long orderId); // PENDIENTE ESTE ENDPOINT!!!!
 }

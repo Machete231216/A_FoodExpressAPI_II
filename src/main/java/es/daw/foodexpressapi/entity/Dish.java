@@ -22,6 +22,8 @@ public class Dish {
     @Column(nullable = false)
     private BigDecimal price;
 
+    // PENDIENTE!!! USAR UN ENUMERADO
+    // Y UN ENUMERADO COMPLEJO? Si categoría = Hamburguesa -> plus precio de X euros.
     private String category;
 
     @ManyToOne(fetch = FetchType.LAZY)
