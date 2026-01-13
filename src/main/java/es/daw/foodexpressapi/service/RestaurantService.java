@@ -3,6 +3,7 @@ package es.daw.foodexpressapi.service;
 import es.daw.foodexpressapi.dto.RestaurantRequestDTO;
 import es.daw.foodexpressapi.dto.RestaurantResponseDTO;
 import es.daw.foodexpressapi.entity.Restaurant;
+import es.daw.foodexpressapi.exception.RestaurantNotFoundException;
 import es.daw.foodexpressapi.mapper.RestaurantMapper;
 import es.daw.foodexpressapi.repository.RestaurantRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class RestaurantService {
 
     public RestaurantResponseDTO update(Long id, RestaurantRequestDTO restaurantRequestDTO) {
         Restaurant restaurant = restaurantRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("El restaurante no existe con código "+id));
+                .orElseThrow(() -> new RestaurantNotFoundException(id));
 
         restaurant.setName(restaurantRequestDTO.getName());
         restaurant.setAddress(restaurantRequestDTO.getAddress());
