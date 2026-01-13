@@ -1,5 +1,6 @@
 package es.daw.foodexpressapi.entity;
 
+import es.daw.foodexpressapi.enums.DishCategory;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -22,9 +23,9 @@ public class Dish {
     @Column(nullable = false)
     private BigDecimal price;
 
-    // PENDIENTE!!! USAR UN ENUMERADO
-    // Y UN ENUMERADO COMPLEJO? Si categoría = Hamburguesa -> plus precio de X euros.
-    private String category;
+    //private String category;
+    @Enumerated(EnumType.STRING)
+    private DishCategory category;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
