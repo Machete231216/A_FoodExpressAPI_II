@@ -1,6 +1,9 @@
 package es.daw.foodexpressapi.repository;
 
 import es.daw.foodexpressapi.dto.OrderSummaryDTO;
+import es.daw.foodexpressapi.dto.report.CustomerSpendDTO;
+import es.daw.foodexpressapi.dto.report.DishUnitsSoldDTO;
+import es.daw.foodexpressapi.dto.report.RestaurantOrdersDTO;
 import es.daw.foodexpressapi.entity.Order;
 import es.daw.foodexpressapi.entity.OrderDetail;
 import es.daw.foodexpressapi.enums.OrderStatus;
@@ -61,7 +64,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
 
 
     // ------------------ ENPOINTS DEL GIT HUB ----------------------
-    // ¿Cuánto ha gastado cada cliente?
+
 //        - Agrupar pedidos por usuario
 //        - Sumar el subtotal de todas las líneas de pedido (OrderDetail)
 //        - Devolver un ranking ordenado por gasto total
@@ -83,11 +86,12 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
 //        - SUM(od.subtotal) → agregado → NO va en GROUP BY
 //
 //        - Si no se pone nada, en JPQL es un INNER JOIN por defecto
-//        - Solo cuentan los pedidos que tengan líneas, es decir, que tengan detalles asociados. Para tenerlo en cuenta habría que cambiar a LEFT JOIN
+//        - Solo cuentan los pedidos que tengan líneas, es decir, que tengan detalles asociados.
+//        - Para tenerlo en cuenta habría que cambiar a LEFT JOIN
 //        - Si quisiéramos incluir también pedidos sin líneas, habría que usar LEFT JOIN, y además tratar los valores null en la suma.
-//        - SUM(COALESCE(od.subtotal, 0))
 //
 //            - Se hace una proyección a DTO (no se devuelven entidades)
+// ¿Cuánto ha gastado cada cliente?
     @Query("""
         SELECT new es.daw.foodexpressapi.dto.report.CustomerSpendDTO(
             u.id,
@@ -103,6 +107,25 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     List<CustomerSpendDTO> findCustomerSpend();
 
 
+    /*
+
+    - Agrupar pedidos por restaurante
+    - Contar cuántos pedidos tiene cada restaurante
+    - Ordenar de mayor a menor
+
+        - La entidad raíz es Order.
+        - Cada fila de partida es un pedido.
+        - Desde ahí navegamos a Restaurant
+
+    - Order tiene una relación @ManyToOne con Restaurant.
+    - JOIN sin tipo explícito = INNER JOIN.
+    - Significa: solo cuentan pedidos que tienen restaurante asociado (lo normal si la FK es obligatoria).
+    - Aparecen solo restaurantes que tienen al menos un pedido, porque el punto de partida es Order.
+    - Un restaurante con 0 pedidos no puede aparecer, aunque uses LEFT JOIN, porque no hay filas de Order desde las que “arrancar”.
+
+    - Se hace una proyección a DTO (no se devuelven entidades)
+     */
+    // ¿Qué restaurantes tienen más pedidos?
     @Query("""
         SELECT new es.daw.foodexpressapi.dto.report.RestaurantOrdersDTO(
             r.id,
@@ -116,6 +139,15 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
     """)
     List<RestaurantOrdersDTO> findTopRestaurantsByOrders();
 
+    /*
+    - No es dinero, es la cantidad de platos, no lo se ha gastado....
+    - Es unidades vendidas = suma de quantity de las líneas de pedido.
+    - Partimos de Order como entidad raíz porque el dato “vendido” nace de pedidos reales.
+    - Aunque haya múltiples pedidos y múltiples líneas para el mismo plato, el SUM las consolida en un único total.
+     -Incluye Platos que aparecen en al menos una línea de pedido.
+     - Excluye Platos que nunca se han pedido (no aparecen en OrderDetail).
+     */
+    //¿Cuáles son los platos más vendidos?
     @Query("""
         SELECT new es.daw.foodexpressapi.dto.report.DishUnitsSoldDTO(
             d.id,
@@ -123,7 +155,7 @@ public interface OrderRepository extends JpaRepository<Order,Long> {
             SUM(od.quantity)
         )
         FROM Order o
-        JOIN o.details od
+        JOIN o.orderDetails od
         JOIN od.dish d
         GROUP BY d.id, d.name
         ORDER BY SUM(od.quantity) DESC

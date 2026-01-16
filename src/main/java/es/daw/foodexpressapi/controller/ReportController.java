@@ -1,10 +1,17 @@
 package es.daw.foodexpressapi.controller;
 
+import es.daw.foodexpressapi.dto.report.CustomerSpendDTO;
+import es.daw.foodexpressapi.dto.report.DishUnitsSoldDTO;
+import es.daw.foodexpressapi.dto.report.RestaurantOrdersDTO;
+import es.daw.foodexpressapi.service.ReportService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * ¿Cuánto ha gastado cada cliente?
@@ -25,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/api/reports")
+@RequiredArgsConstructor
 public class ReportController {
 
     private final ReportService reportService;
@@ -38,10 +46,15 @@ public class ReportController {
     // ¿Qué restaurantes tienen más pedidos?
     @GetMapping("/restaurants/top-by-orders")
     public ResponseEntity<List<RestaurantOrdersDTO>> getTopRestaurantsByOrders() {
+        // pendiente!!! que llegue un parámetro para indicar si salen todos los restaurantes o no!!!
+        // pendiente cambiar el limit del stream por paginación!!!
+
         return ResponseEntity.ok(reportService.getTopRestaurantsByOrders());
     }
 
     //¿Cuáles son los platos más vendidos?
+
+    // pendiente: meter paginación!!!
     @GetMapping("/dishes/top-by-units")
     public ResponseEntity<List<DishUnitsSoldDTO>> getTopDishesByUnitsSold(
             @RequestParam(defaultValue = "10") int limit
